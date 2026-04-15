@@ -1,96 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Interactive Graph Memory Simulator</title>
 
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-sans); }
-.panel { background: var(--color-background-primary); border: 0.5px solid var(--color-border-tertiary); border-radius: var(--border-radius-lg); padding: 1rem 1.25rem; }
-.msg { font-size: 13px; line-height: 1.6; padding: 8px 12px; border-radius: var(--border-radius-md); margin-bottom: 8px; max-width: 88%; }
-.msg.user { background: var(--color-background-info); color: var(--color-text-info); margin-left: auto; }
-.msg.ai { background: var(--color-background-secondary); color: var(--color-text-primary); }
-.msg.system { background: var(--color-background-warning); color: var(--color-text-warning); font-size: 12px; font-style: italic; max-width: 100%; }
-.tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; margin: 2px; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: #f6f7fb;
+  padding: 20px;
+  color: #222;
+}
+
+.panel {
+  background: #ffffff;
+  border: 1px solid #e3e3e3;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.msg {
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  max-width: 88%;
+}
+
+.msg.user { background: #e7f0ff; margin-left: auto; }
+.msg.ai { background: #f0f0f0; }
+.msg.system { background: #fff3cd; font-style: italic; max-width: 100%; }
+
+button {
+  cursor: pointer;
+  border: none;
+  background: #5b6cff;
+  color: white;
+  border-radius: 6px;
+  padding: 6px 12px;
+}
+
+button:hover { opacity: 0.9; }
+
+input {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  margin: 2px;
+}
+
 .tag-person { background: #EEEDFE; color: #3C3489; }
 .tag-skill  { background: #E1F5EE; color: #085041; }
 .tag-place  { background: #FAEEDA; color: #633806; }
 .tag-org    { background: #FAECE7; color: #712B13; }
-.edge-row { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 5px 8px; border-radius: var(--border-radius-md); background: var(--color-background-secondary); margin-bottom: 4px; }
-.edge-sub { font-size: 11px; padding: 2px 7px; border-radius: 99px; background: var(--color-background-tertiary); color: var(--color-text-secondary); }
-.node-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-.stat { text-align: center; }
-.stat-n { font-size: 22px; font-weight: 500; color: var(--color-text-primary); }
-.stat-l { font-size: 11px; color: var(--color-text-secondary); margin-top: 2px; }
-svg text { font-family: var(--font-sans); }
+
+.edge-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 5px 8px;
+  border-radius: 6px;
+  background: #f3f3f3;
+  margin-bottom: 4px;
+}
+
+.node-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.stat {
+  text-align: center;
+}
+
+.stat-n {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.stat-l {
+  font-size: 11px;
+  color: #666;
+}
+
 </style>
+</head>
 
-<h2 class="sr-only">Interactive graph memory simulator — type messages and watch facts get extracted into a live knowledge graph</h2>
+<body>
 
-<div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;padding:1rem 0">
+<h2 style="margin-bottom:15px;">Interactive Graph Memory Simulator</h2>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
 
   <div style="display:flex;flex-direction:column;gap:12px">
-    <div class="panel" style="flex:1">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;letter-spacing:.04em">CONVERSATION</div>
+    <div class="panel">
+      <div style="font-size:12px;font-weight:bold;margin-bottom:10px;">Conversation</div>
       <div id="chat" style="min-height:180px;max-height:260px;overflow-y:auto;margin-bottom:12px"></div>
       <div style="display:flex;gap:8px">
-        <input id="inp" type="text" placeholder="Tell me something about yourself…" style="flex:1;font-size:13px" onkeydown="if(event.key==='Enter')send()">
-        <button onclick="send()" style="font-size:13px;padding:0 14px">Send</button>
+        <input id="inp" type="text" placeholder="Tell me something about yourself…" 
+        style="flex:1" 
+        onkeydown="if(event.key==='Enter')send()">
+        <button onclick="send()">Send</button>
       </div>
     </div>
 
     <div class="panel">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;letter-spacing:.04em">EXTRACTED THIS TURN</div>
-      <div id="extracted" style="font-size:12px;color:var(--color-text-secondary);min-height:36px">Nothing yet — send a message above.</div>
+      <div style="font-size:12px;font-weight:bold;margin-bottom:10px;">Extracted This Turn</div>
+      <div id="extracted">Nothing yet — send a message above.</div>
     </div>
   </div>
 
   <div style="display:flex;flex-direction:column;gap:12px">
-    <div class="panel" style="flex:1">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:10px;letter-spacing:.04em">KNOWLEDGE GRAPH — LIVE</div>
-      <canvas id="gc" width="300" height="260" style="width:100%;border-radius:var(--border-radius-md)"></canvas>
+    <div class="panel">
+      <div style="font-size:12px;font-weight:bold;margin-bottom:10px;">Knowledge Graph</div>
+      <canvas id="gc" width="400" height="300" style="width:100%"></canvas>
     </div>
 
     <div class="panel">
-      <div style="font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:8px;letter-spacing:.04em">STORED EDGES</div>
-      <div id="edges" style="max-height:120px;overflow-y:auto">
-        <div style="font-size:12px;color:var(--color-text-secondary)">No facts stored yet.</div>
-      </div>
+      <div style="font-size:12px;font-weight:bold;margin-bottom:8px;">Stored Edges</div>
+      <div id="edges"></div>
     </div>
   </div>
 
 </div>
 
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:0 0 1rem">
-  <div class="panel stat"><div class="stat-n" id="sn">0</div><div class="stat-l">nodes</div></div>
-  <div class="panel stat"><div class="stat-n" id="se">0</div><div class="stat-l">edges</div></div>
-  <div class="panel stat"><div class="stat-n" id="st">0</div><div class="stat-l">turns</div></div>
-  <div class="panel stat" style="cursor:pointer" onclick="reset()"><div class="stat-n" style="font-size:16px;padding-top:4px">Reset</div><div class="stat-l">clear all</div></div>
-</div>
-
-<div style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:1rem">
-  <span style="font-size:12px;color:var(--color-text-secondary);align-self:center">Try:</span>
-  <button style="font-size:12px" onclick="tryMsg('My name is Rahul and I live in Delhi')">My name is Rahul and I live in Delhi</button>
-  <button style="font-size:12px" onclick="tryMsg('I work at Google as a software engineer')">I work at Google as a software engineer</button>
-  <button style="font-size:12px" onclick="tryMsg('I know Python and JavaScript')">I know Python and JavaScript</button>
-  <button style="font-size:12px" onclick="tryMsg('My friend Priya also works at Google')">My friend Priya also works at Google</button>
-  <button style="font-size:12px" onclick="tryMsg('Who do I work with at Google?')">Who do I work with at Google? ↗</button>
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px;">
+  <div class="panel stat"><div class="stat-n" id="sn">0</div><div class="stat-l">Nodes</div></div>
+  <div class="panel stat"><div class="stat-n" id="se">0</div><div class="stat-l">Edges</div></div>
+  <div class="panel stat"><div class="stat-n" id="st">0</div><div class="stat-l">Turns</div></div>
+  <div class="panel stat" style="cursor:pointer" onclick="reset()">
+    <div class="stat-n">Reset</div>
+    <div class="stat-l">Clear</div>
+  </div>
 </div>
 
 <script>
 const COLORS = { Person:'#7F77DD', Skill:'#1D9E75', Place:'#BA7517', Org:'#D85A30', Unknown:'#888780' };
-const TAG_CLASS = { Person:'tag-person', Skill:'tag-skill', Place:'tag-place', Org:'tag-org' };
 
 let graph = { nodes: {}, edges: [] };
 let turns = 0;
-
-const PATTERNS = [
-  { re:/my name is (\w+)/i,     fn:m=>add('Rahul-fallback',m[1],'Person') && rel(m[1],'IS_USER','conversation') },
-  { re:/i (?:am|'m) (\w+)/i,   fn:m=>add(m[1],m[1],'Person') && rel(m[1],'IS_USER','conversation') },
-  { re:/i live in ([a-z ]+)/i,  fn:m=>{ add('me','Me','Person'); add(m[1].trim(),m[1].trim(),'Place'); rel('Me','LIVES_IN',m[1].trim()); } },
-  { re:/i work at ([a-z ]+?) as ([a-z ]+)/i, fn:m=>{ add('Me','Me','Person'); add(m[1].trim(),m[1].trim(),'Org'); rel('Me','WORKS_AT',m[1].trim(),m[2].trim()); } },
-  { re:/i work at ([a-z ]+)/i,  fn:m=>{ add('Me','Me','Person'); add(m[1].trim(),m[1].trim(),'Org'); rel('Me','WORKS_AT',m[1].trim()); } },
-  { re:/i know ([a-z]+(?: and [a-z]+)*)/i, fn:m=>{ m[1].split(/ and /i).forEach(s=>{ add(s.trim(),s.trim(),'Skill'); rel('Me','HAS_SKILL',s.trim()); }); } },
-  { re:/my friend (\w+) (?:also )?works at ([a-z ]+)/i, fn:m=>{ add(m[1],m[1],'Person'); add(m[2].trim(),m[2].trim(),'Org'); rel(m[1],'WORKS_AT',m[2].trim()); rel('Me','KNOWS',m[1]); } },
-  { re:/(\w+) (?:works|is working) at ([a-z ]+)/i, fn:m=>{ add(m[1],m[1],'Person'); add(m[2].trim(),m[2].trim(),'Org'); rel(m[1],'WORKS_AT',m[2].trim()); } },
-];
-
 let lastExtracted = [];
 
 function add(id, label, type) {
@@ -99,48 +160,41 @@ function add(id, label, type) {
   return id;
 }
 
-function rel(a, type, b, prop) {
+function rel(a, type, b) {
   a = a.charAt(0).toUpperCase()+a.slice(1);
   b = b.charAt(0).toUpperCase()+b.slice(1);
-  const exists = graph.edges.find(e=>e.a===a&&e.type===type&&e.b===b);
-  if (!exists) {
-    graph.edges.push({ a, type, b, prop });
-    lastExtracted.push({ a, type, b, prop });
+  if (!graph.edges.find(e=>e.a===a&&e.type===type&&e.b===b)) {
+    graph.edges.push({ a, type, b });
+    lastExtracted.push({ a, type, b });
   }
-  return true;
 }
 
 function extract(text) {
   lastExtracted = [];
   const lower = text.toLowerCase();
-  PATTERNS.forEach(p=>{ const m = lower.match(p.re); if(m) p.fn(m); });
-}
 
-function isQuestion(text) {
-  return /\?/.test(text) || /^(who|what|where|when|how|does|is|are|do)/i.test(text.trim());
-}
+  if (lower.includes("live in")) {
+    const place = text.split("live in")[1].trim();
+    add("Me","Me","Person");
+    add(place,place,"Place");
+    rel("Me","LIVES_IN",place);
+  }
 
-function answerQuestion(text) {
-  const t = text.toLowerCase();
-  if (/who.*work.*with|colleague|same company/i.test(t)) {
-    const coOrgs = {};
-    graph.edges.filter(e=>e.type==='WORKS_AT').forEach(e=>{ if(!coOrgs[e.b]) coOrgs[e.b]=[]; coOrgs[e.b].push(e.a); });
-    const groups = Object.entries(coOrgs).filter(([o,p])=>p.length>1);
-    if (groups.length) return groups.map(([o,p])=>`At ${o}: ${p.join(', ')}`).join('. ');
-    return "I don't have enough info about your colleagues yet.";
+  if (lower.includes("work at")) {
+    const org = text.split("work at")[1].trim();
+    add("Me","Me","Person");
+    add(org,org,"Org");
+    rel("Me","WORKS_AT",org);
   }
-  if (/skill|know|can/i.test(t)) {
-    const skills = graph.edges.filter(e=>e.type==='HAS_SKILL').map(e=>e.b);
-    return skills.length ? `Skills I know about: ${skills.join(', ')}.` : "No skills recorded yet.";
+
+  if (lower.includes("know")) {
+    const skills = text.split("know")[1].split(",");
+    skills.forEach(s=>{
+      s=s.trim();
+      add(s,s,"Skill");
+      rel("Me","HAS_SKILL",s);
+    });
   }
-  if (/where.*live|location/i.test(t)) {
-    const e = graph.edges.find(e=>e.type==='LIVES_IN');
-    return e ? `Lives in ${e.b}.` : "I don't know where you live yet.";
-  }
-  const nodeCount = Object.keys(graph.nodes).length;
-  return nodeCount>0
-    ? `From my memory, I know about: ${Object.values(graph.nodes).map(n=>n.label).join(', ')}.`
-    : "I don't have any facts stored yet.";
 }
 
 function pushMsg(role, text) {
@@ -152,25 +206,6 @@ function pushMsg(role, text) {
   div.scrollTop = div.scrollHeight;
 }
 
-function updateExtracted() {
-  const el = document.getElementById('extracted');
-  if (!lastExtracted.length) { el.innerHTML = '<span style="color:var(--color-text-secondary)">No new facts extracted.</span>'; return; }
-  el.innerHTML = lastExtracted.map(e=>{
-    const ac = TAG_CLASS[graph.nodes[e.a]?.type]||'';
-    const bc = TAG_CLASS[graph.nodes[e.b]?.type]||'';
-    return `<span class="tag ${ac}">${e.a}</span><span style="font-size:11px;color:var(--color-text-secondary)">—${e.type}→</span><span class="tag ${bc}">${e.b}</span>${e.prop?`<span class="tag" style="background:var(--color-background-tertiary);color:var(--color-text-secondary)">${e.prop}</span>`:''}`;
-  }).join(' &nbsp; ');
-}
-
-function updateEdges() {
-  const el = document.getElementById('edges');
-  if (!graph.edges.length) { el.innerHTML = '<div style="font-size:12px;color:var(--color-text-secondary)">No facts stored yet.</div>'; return; }
-  el.innerHTML = graph.edges.map(e=>{
-    const col = COLORS[graph.nodes[e.a]?.type]||COLORS.Unknown;
-    return `<div class="edge-row"><div class="node-dot" style="background:${col}"></div><span style="font-weight:500;font-size:12px;color:var(--color-text-primary)">${e.a}</span><span class="edge-sub">${e.type}</span><span style="font-size:12px;color:var(--color-text-primary)">${e.b}</span>${e.prop?`<span style="font-size:11px;color:var(--color-text-secondary)">(${e.prop})</span>`:''}</div>`;
-  }).join('');
-}
-
 function updateStats() {
   document.getElementById('sn').textContent = Object.keys(graph.nodes).length;
   document.getElementById('se').textContent = graph.edges.length;
@@ -180,64 +215,26 @@ function updateStats() {
 function drawGraph() {
   const canvas = document.getElementById('gc');
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  ctx.clearRect(0, 0, W, H);
+  ctx.clearRect(0,0,canvas.width,canvas.height);
 
   const nodes = Object.entries(graph.nodes);
-  if (!nodes.length) {
-    ctx.fillStyle = 'rgba(128,128,128,0.3)';
-    ctx.font = '13px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('Graph will appear here…', W/2, H/2);
-    return;
-  }
+  const cx = canvas.width/2;
+  const cy = canvas.height/2;
+  const r = 100;
 
-  const pos = {};
-  const cx = W/2, cy = H/2, r = Math.min(W,H)*0.32;
-  nodes.forEach(([id],i) => {
-    const angle = (2*Math.PI*i/nodes.length) - Math.PI/2;
-    pos[id] = { x: cx + r*Math.cos(angle), y: cy + r*Math.sin(angle) };
-  });
-  if (nodes.length === 1) pos[nodes[0][0]] = { x: cx, y: cy };
+  nodes.forEach(([id,n],i)=>{
+    const angle = (2*Math.PI*i/nodes.length);
+    const x = cx + r*Math.cos(angle);
+    const y = cy + r*Math.sin(angle);
 
-  const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const edgeColor = isDark ? 'rgba(200,200,200,0.25)' : 'rgba(80,80,80,0.2)';
-  const labelColor = isDark ? 'rgba(200,200,200,0.7)' : 'rgba(60,60,60,0.8)';
-
-  graph.edges.forEach(e => {
-    const a = pos[e.a], b = pos[e.b];
-    if (!a || !b) return;
     ctx.beginPath();
-    ctx.moveTo(a.x, a.y);
-    ctx.lineTo(b.x, b.y);
-    ctx.strokeStyle = edgeColor;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    const mx = (a.x+b.x)/2, my = (a.y+b.y)/2;
-    ctx.fillStyle = labelColor;
-    ctx.font = '9px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText(e.type, mx, my-3);
-  });
-
-  nodes.forEach(([id, n]) => {
-    const p = pos[id];
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, 20, 0, 2*Math.PI);
+    ctx.arc(x,y,20,0,2*Math.PI);
     ctx.fillStyle = COLORS[n.type]||COLORS.Unknown;
     ctx.fill();
-    ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
-    ctx.fillStyle = '#fff';
-    ctx.font = '500 10px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    const label = n.label.length > 7 ? n.label.slice(0,6)+'…' : n.label;
-    ctx.fillText(label, p.x, p.y);
-    ctx.fillStyle = isDark ? 'rgba(220,220,220,0.6)' : 'rgba(40,40,40,0.55)';
-    ctx.font = '9px sans-serif';
-    ctx.fillText(n.type, p.x, p.y+26);
+    ctx.fillStyle="#fff";
+    ctx.textAlign="center";
+    ctx.textBaseline="middle";
+    ctx.fillText(n.label,x,y);
   });
 }
 
@@ -245,54 +242,25 @@ function send() {
   const inp = document.getElementById('inp');
   const text = inp.value.trim();
   if (!text) return;
-  inp.value = '';
+  inp.value='';
   turns++;
-
-  pushMsg('user', text);
-
-  if (isQuestion(text)) {
-    const ans = answerQuestion(text);
-    pushMsg('system', 'Querying graph memory…');
-    setTimeout(() => {
-      const sysMsgs = document.querySelectorAll('.msg.system');
-      sysMsgs[sysMsgs.length-1].remove();
-      pushMsg('ai', ans);
-      lastExtracted = [];
-      updateExtracted();
-    }, 400);
-  } else {
-    extract(text);
-    const reply = lastExtracted.length
-      ? `Got it — I stored ${lastExtracted.length} new fact${lastExtracted.length>1?'s':''} in the graph.`
-      : 'I heard you, but couldn\'t extract specific facts. Try "I live in…" or "I know…".';
-    pushMsg('ai', reply);
-    updateExtracted();
-  }
-
-  updateEdges();
+  pushMsg('user',text);
+  extract(text);
+  pushMsg('ai',"Stored in graph memory.");
   updateStats();
   drawGraph();
 }
 
-function tryMsg(msg) {
-  document.getElementById('inp').value = msg;
-  if (msg.includes('?') || msg.includes('Who')) {
-    send();
-  } else {
-    send();
-  }
-}
-
-function reset() {
+function reset(){
   graph = { nodes:{}, edges:[] };
-  turns = 0;
-  lastExtracted = [];
-  document.getElementById('chat').innerHTML = '';
-  updateExtracted();
-  updateEdges();
+  turns=0;
+  document.getElementById('chat').innerHTML='';
   updateStats();
   drawGraph();
 }
 
 drawGraph();
 </script>
+
+</body>
+</html>
