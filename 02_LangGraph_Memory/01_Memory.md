@@ -54,13 +54,21 @@ Think:
 
 #### **📦 Types of Memory in LangGraph**
 
-1️⃣ Short-Term Memory (Graph State) : [Short Term Memory](./02_Short_Term_Memory.md)
+🟡Short-Term Memory (Graph State) : [Short Term Memory](./02_Short_Term_Memory.md)
 
-2️⃣ Persistent Memory (Checkpointing)
+🟡Persistent Memory (Checkpointing) : [Persisted  Memory](./04_Persisted_Memory.md)
 
-3️⃣ Thread-Based Memory
+🟡Thread-Based Memory
 
-4️⃣ Long-Term Memory (External Storage) 
+🟡Long-Term Memory (External Storage) : [Long Term Memory](./03_Long_term_Memory.md)
+
+🟡Persisted Memory : [Persisted Memory](./04_Persisted_Memory.md)
+
+🟡Factual Memory : [Factual Memory](./05_Factual_memory.md)
+
+🟡Episodic memory : [Episodic Memory](./06_Episodic_memory.md)
+
+🟡Semantic Memory : [Semantic Memory](./07_Semantic_Memory.md)
 
 <!-- ⚪⚫⚪  Lets learn: [Nodes, Edges & State](./02_Nodes_edges_state.md) -->
 <!-- 🔷🔶🔹🔸🔘🔴🟠🟡⚪⚫🟤🟣🔵🟢 -->
