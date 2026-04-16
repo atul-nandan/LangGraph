@@ -1,5 +1,5 @@
 
-### **🧠 1️⃣ Short-Term Memory (Graph State) in LangGraph**
+### **🧠 Long-Term Memory in LangGraph**
 ```
 🔹Long-Term Memory = information that survives beyond one execution or session.
 🔹If you restart your program and the agent still remembers you → that’s long-term memory.

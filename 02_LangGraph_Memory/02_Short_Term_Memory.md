@@ -1,4 +1,4 @@
-### **🧠 1️⃣ Short-Term Memory (Graph State) in LangGraph**
+### **🧠 Short-Term Memory (Graph State) in LangGraph**
 ```
 Short-term memory = the shared state object that exists while the graph is running.
 It stores everything the agent currently knows during execution.

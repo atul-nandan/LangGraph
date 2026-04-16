@@ -1,8 +1,8 @@
 ### 🔶**Graph Memory**
-```
+
 Graph memory is the use of a knowledge graph as the long-term memory layer for an AI system. 
 Instead of cramming everything into a context window (which is flat, lossy, and temporary), you persist facts as structured nodes and edges that can be queried, updated, and reasoned over.
-```
+
 
 *The typical lifecycle looks like this:*
 <p align="center">
@@ -11,7 +11,8 @@ Instead of cramming everything into a context window (which is flat, lossy, and 
 
 *The core problem it solves:*
 ```
- A normal AI has no memory between conversations. Every time you start fresh, it knows nothing about you. Graph memory fixes this by storing facts outside the AI, in a database shaped like a network.
+ A normal AI has no memory between conversations. Every time you start fresh, it knows nothing about you. 
+ Graph memory fixes this by storing facts outside the AI, in a database shaped like a network.
 ```
 **What happens turn by turn:**
 ```
@@ -22,7 +23,6 @@ Instead of cramming everything into a context window (which is flat, lossy, and 
 ```
 
 *Why a graph and not a list?* 
-
 ```
 Because facts connect to each other. If you know Priya works at Google, and you work at Google, the graph can answer "who are my colleagues?" by following edges — that's called a multi-hop query, and you can't do it with a flat list or a text file.
 ```
