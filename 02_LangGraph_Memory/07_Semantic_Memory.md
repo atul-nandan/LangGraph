@@ -60,6 +60,6 @@ Semantic Memory	=>  Organized knowledge system built from facts
 
 <!-- ⚪⚫⚪  Lets learn  : [07_Semantic_Memory](./07_Semantic_Memory.md) -->
 
-
+⚪⚫⚪  Lets learn  : [08_Procedural_Memory](./08_Procedural_Memory.md)
 
 <!-- 🔷🔶🔹🔸⭐🔘🔴🟠🟡⚪⚫🟤🟣🔵🟢 -->
